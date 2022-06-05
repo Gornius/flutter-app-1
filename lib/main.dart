@@ -75,21 +75,16 @@ class MyCustomFormState extends State<MyCustomForm> {
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
-  double _currentSliderValue = 0;
+  final _formNameKey = GlobalKey<FormFieldState>();
+  final _formLastNameKey = GlobalKey<FormFieldState>();
+  final _formLevelKey = GlobalKey<FormFieldState>();
+  final _formLevelSliderKey = GlobalKey<FormFieldState>();
+  final _formLevelController = TextEditingController();
+
   bool _isFormSaved = false;
-  bool _isFormOK = false;
-  bool _nameOK = false;
-  bool _lastnameOK = false;
-  bool _levelOK = false;
   String? _imie;
   String? _nazwisko;
-  String? _poziom;
-
-  void _checkForm(String s) {
-    setState(() {
-      _isFormOK = _formKey.currentState!.validate() ? true : false;
-    });
-  }
+  double _poziom = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -104,21 +99,19 @@ class MyCustomFormState extends State<MyCustomForm> {
           children: [
             Focus(
               child: TextFormField(
+                key: _formNameKey,
                 // The validator receives the text that the user has entered.
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    _nameOK = false;
-                    return 'Please enter some text';
+                  if (value!.isEmpty) {
+                    return 'Bledne imie';
                   }
-                  _nameOK = true;
                   _imie = value;
                   return null;
                 },
                 decoration: const InputDecoration(labelText: 'Imię'),
               ),
               onFocusChange: (hasFocus) {
-                _checkForm('');
-                if (!_nameOK && !hasFocus) {
+                if (!hasFocus && !_formNameKey.currentState!.validate()) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Bledne imie')),
                   );
@@ -127,21 +120,18 @@ class MyCustomFormState extends State<MyCustomForm> {
             ),
             Focus(
               child: TextFormField(
-                // The validator receives the text that the user has entered.
+                key: _formLastNameKey,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    _lastnameOK = false;
-                    return 'Please enter some text';
+                    return 'Bledne nazwisko';
                   }
-                  _lastnameOK = true;
                   _nazwisko = value;
                   return null;
                 },
                 decoration: const InputDecoration(labelText: 'Nazwisko'),
               ),
               onFocusChange: (hasFocus) {
-                _checkForm('');
-                if (!_lastnameOK && !hasFocus) {
+                if (!hasFocus && !_formLastNameKey.currentState!.validate()) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Bledne nazwisko')),
                   );
@@ -151,22 +141,21 @@ class MyCustomFormState extends State<MyCustomForm> {
             Focus(
               child: TextFormField(
                 // The validator receives the text that the user has entered.
+                controller: _formLevelController,
+                key: _formLevelKey,
                 validator: (value) {
                   if (value == null ||
                       value.isEmpty ||
-                      int.parse(value) % 4 != 0) {
-                    _levelOK = false;
-                    return 'Please enter some text';
+                      double.parse(value) % 4 != 0) {
+                    return 'Bledny poziom';
                   }
-                  _levelOK = true;
-                  _poziom = value;
+                  _poziom = double.parse(value);
                   return null;
                 },
                 decoration: const InputDecoration(labelText: 'Poziom'),
               ),
               onFocusChange: (hasFocus) {
-                _checkForm('');
-                if (!_levelOK && !hasFocus) {
+                if (!hasFocus && !_formLevelKey.currentState!.validate()) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Bledny poziom')),
                   );
@@ -174,14 +163,17 @@ class MyCustomFormState extends State<MyCustomForm> {
               },
             ),
             Slider(
-              value: _currentSliderValue,
+              key: _formLevelSliderKey,
+              value: _poziom,
               max: 100,
               divisions: 25,
-              label: _currentSliderValue.round().toString(),
+              label: _poziom.round().toString(),
               onChanged: _isFormSaved
                   ? (double value) {
                       setState(() {
-                        _currentSliderValue = value;
+                        _formLevelController.value = _formLevelController.value
+                            .copyWith(text: value.round().toString());
+                        _poziom = value;
                       });
                     }
                   : null,
@@ -189,14 +181,14 @@ class MyCustomFormState extends State<MyCustomForm> {
             Stack(
               children: [
                 Image.asset('resources/cisu.png'),
-                Text(_currentSliderValue.round().toString()),
+                Text(_poziom.round().toString()),
               ],
               alignment: Alignment.bottomLeft,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: ElevatedButton(
-                onPressed: _isFormOK
+                onPressed: _formKey.currentState?.validate() ?? true
                     ? () {
                         setState(() {
                           _isFormSaved = _isFormSaved ? false : true;
