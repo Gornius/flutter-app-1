@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 void main() => runApp(const MyApp());
 
@@ -49,7 +51,7 @@ class SecondRoute extends StatelessWidget {
           ),
           Text("imie: $imie"),
           Text("nazwisko: $nazwisko"),
-          Text("poziom: $poziom"),
+          Text("poziom: ${poziom.round()}"),
         ],
       ),
     );
@@ -85,6 +87,7 @@ class MyCustomFormState extends State<MyCustomForm> {
   String? _imie;
   String? _nazwisko;
   double _poziom = 0;
+  File? _imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +108,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                   if (value!.isEmpty) {
                     return 'Bledne imie';
                   }
-                  _imie = value;
+                  setState(() {
+                    _imie = value;
+                  });
                   return null;
                 },
                 decoration: const InputDecoration(labelText: 'Imię'),
@@ -125,7 +130,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                   if (value == null || value.isEmpty) {
                     return 'Bledne nazwisko';
                   }
-                  _nazwisko = value;
+                  setState(() {
+                    _nazwisko = value;
+                  });
                   return null;
                 },
                 decoration: const InputDecoration(labelText: 'Nazwisko'),
@@ -149,7 +156,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                       double.parse(value) % 4 != 0) {
                     return 'Bledny poziom';
                   }
-                  _poziom = double.parse(value);
+                  setState(() {
+                    _poziom = double.parse(value);
+                  });
                   return null;
                 },
                 decoration: const InputDecoration(labelText: 'Poziom'),
@@ -178,10 +187,37 @@ class MyCustomFormState extends State<MyCustomForm> {
                     }
                   : null,
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: ElevatedButton(
+                onPressed: () async {
+                  var pickedFile = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
+                  setState(() {
+                    _imageFile = File(pickedFile!.path);
+                  });
+                  ;
+                },
+                child: const Text("Wybierz obraz"),
+              ),
+            ),
             Stack(
               children: [
-                Image.asset('resources/cisu.png'),
-                Text(_poziom.round().toString()),
+                (_imageFile != null)
+                    ? Image.file(
+                        _imageFile!,
+                        fit: BoxFit.cover,
+                        //width: MediaQuery.of(context).size.width * 0.75,
+                        height: MediaQuery.of(context).size.height * 0.3,
+                      )
+                    : const Text("image not provided"),
+                Text(
+                  _poziom.round().toString(),
+                  style: const TextStyle(
+                    backgroundColor: Colors.tealAccent,
+                    fontSize: 40,
+                  ),
+                ),
               ],
               alignment: Alignment.bottomLeft,
             ),
