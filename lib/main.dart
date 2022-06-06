@@ -27,11 +27,13 @@ class MyApp extends StatelessWidget {
 }
 
 class SecondRoute extends StatelessWidget {
-  const SecondRoute({Key? key, this.imie, this.nazwisko, this.poziom})
+  const SecondRoute(
+      {Key? key, this.imie, this.nazwisko, this.poziom, this.avatar})
       : super(key: key);
   final imie;
   final nazwisko;
   final poziom;
+  final avatar;
 
   @override
   Widget build(BuildContext context) {
@@ -39,20 +41,34 @@ class SecondRoute extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Detale"),
       ),
-      body: Column(
-        children: [
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Back"),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Back"),
+              ),
             ),
-          ),
-          Text("imie: $imie"),
-          Text("nazwisko: $nazwisko"),
-          Text("poziom: ${poziom.round()}"),
-        ],
+            Text("imie: $imie"),
+            Text("nazwisko: $nazwisko"),
+            Text("poziom: ${poziom.round()}"),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              child: Stack(alignment: Alignment.bottomLeft, children: [
+                Image.file(avatar),
+                Text(
+                  "${poziom.round()} poziom",
+                  style: const TextStyle(
+                      backgroundColor: Colors.white, fontSize: 40.0),
+                )
+              ]),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -237,9 +253,11 @@ class MyCustomFormState extends State<MyCustomForm> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => SecondRoute(
-                                      imie: _imie,
-                                      nazwisko: _nazwisko,
-                                      poziom: _poziom)));
+                                        imie: _imie,
+                                        nazwisko: _nazwisko,
+                                        poziom: _poziom,
+                                        avatar: _imageFile,
+                                      )));
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
