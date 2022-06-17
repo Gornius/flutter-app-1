@@ -108,168 +108,171 @@ class MyCustomFormState extends State<MyCustomForm> {
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
-    return Form(
-      key: _formKey,
-      // autovalidateMode: AutovalidateMode.onUserInteraction,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Focus(
-              child: TextFormField(
-                key: _formNameKey,
-                // The validator receives the text that the user has entered.
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Bledne imie';
-                  }
-                  setState(() {
-                    _imie = value;
-                  });
-                  return null;
-                },
-                decoration: const InputDecoration(labelText: 'Imię'),
-              ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus && !_formNameKey.currentState!.validate()) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Bledne imie')),
-                  );
-                }
-              },
-            ),
-            Focus(
-              child: TextFormField(
-                key: _formLastNameKey,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bledne nazwisko';
-                  }
-                  setState(() {
-                    _nazwisko = value;
-                  });
-                  return null;
-                },
-                decoration: const InputDecoration(labelText: 'Nazwisko'),
-              ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus && !_formLastNameKey.currentState!.validate()) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Bledne nazwisko')),
-                  );
-                }
-              },
-            ),
-            Focus(
-              child: TextFormField(
-                // The validator receives the text that the user has entered.
-                controller: _formLevelController,
-                key: _formLevelKey,
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      double.parse(value) % 4 != 0) {
-                    return 'Bledny poziom';
-                  }
-                  setState(() {
-                    _poziom = double.parse(value);
-                  });
-                  return null;
-                },
-                decoration: const InputDecoration(labelText: 'Poziom'),
-              ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus && !_formLevelKey.currentState!.validate()) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Bledny poziom')),
-                  );
-                }
-              },
-            ),
-            Slider(
-              key: _formLevelSliderKey,
-              value: _poziom,
-              max: 100,
-              divisions: 25,
-              label: _poziom.round().toString(),
-              onChanged: _isFormSaved
-                  ? (double value) {
-                      setState(() {
-                        _formLevelController.value = _formLevelController.value
-                            .copyWith(text: value.round().toString());
-                        _poziom = value;
-                      });
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        // autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Focus(
+                child: TextFormField(
+                  key: _formNameKey,
+                  // The validator receives the text that the user has entered.
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Bledne imie';
                     }
-                  : null,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  var pickedFile = await ImagePicker()
-                      .pickImage(source: ImageSource.gallery);
-                  setState(() {
-                    _imageFile = File(pickedFile!.path);
-                  });
-                  ;
-                },
-                child: const Text("Wybierz obraz"),
-              ),
-            ),
-            Stack(
-              children: [
-                (_imageFile != null)
-                    ? Image.file(
-                        _imageFile!,
-                        fit: BoxFit.cover,
-                        //width: MediaQuery.of(context).size.width * 0.75,
-                        height: MediaQuery.of(context).size.height * 0.3,
-                      )
-                    : const Text("image not provided"),
-                Text(
-                  _poziom.round().toString(),
-                  style: const TextStyle(
-                    backgroundColor: Colors.tealAccent,
-                    fontSize: 40,
-                  ),
+                    setState(() {
+                      _imie = value;
+                    });
+                    return null;
+                  },
+                  decoration: const InputDecoration(labelText: 'Imię'),
                 ),
-              ],
-              alignment: Alignment.bottomLeft,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: ElevatedButton(
-                onPressed: _formKey.currentState?.validate() ?? true
-                    ? () {
+                onFocusChange: (hasFocus) {
+                  if (!hasFocus && !_formNameKey.currentState!.validate()) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Bledne imie')),
+                    );
+                  }
+                },
+              ),
+              Focus(
+                child: TextFormField(
+                  key: _formLastNameKey,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Bledne nazwisko';
+                    }
+                    setState(() {
+                      _nazwisko = value;
+                    });
+                    return null;
+                  },
+                  decoration: const InputDecoration(labelText: 'Nazwisko'),
+                ),
+                onFocusChange: (hasFocus) {
+                  if (!hasFocus && !_formLastNameKey.currentState!.validate()) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Bledne nazwisko')),
+                    );
+                  }
+                },
+              ),
+              Focus(
+                child: TextFormField(
+                  // The validator receives the text that the user has entered.
+                  controller: _formLevelController,
+                  key: _formLevelKey,
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        double.parse(value) % 4 != 0) {
+                      return 'Bledny poziom';
+                    }
+                    setState(() {
+                      _poziom = double.parse(value);
+                    });
+                    return null;
+                  },
+                  decoration: const InputDecoration(labelText: 'Poziom'),
+                ),
+                onFocusChange: (hasFocus) {
+                  if (!hasFocus && !_formLevelKey.currentState!.validate()) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Bledny poziom')),
+                    );
+                  }
+                },
+              ),
+              Slider(
+                key: _formLevelSliderKey,
+                value: _poziom,
+                max: 100,
+                divisions: 25,
+                label: _poziom.round().toString(),
+                onChanged: _isFormSaved
+                    ? (double value) {
                         setState(() {
-                          _isFormSaved = _isFormSaved ? false : true;
+                          _formLevelController.value = _formLevelController
+                              .value
+                              .copyWith(text: value.round().toString());
+                          _poziom = value;
                         });
-                        // Validate returns true if the form is valid, or false otherwise.
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a snackbar. In the real world,
-                          // you'd often call a server or save the information in a database.
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SecondRoute(
-                                        imie: _imie,
-                                        nazwisko: _nazwisko,
-                                        poziom: _poziom,
-                                        avatar: _imageFile,
-                                      )));
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Nieprawidlowe dane)')),
-                          );
-                        }
                       }
                     : null,
-                child: const Text('Zapisz'),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    var pickedFile = await ImagePicker()
+                        .pickImage(source: ImageSource.gallery);
+                    setState(() {
+                      _imageFile = File(pickedFile!.path);
+                    });
+                    ;
+                  },
+                  child: const Text("Wybierz obraz"),
+                ),
+              ),
+              Stack(
+                children: [
+                  (_imageFile != null)
+                      ? Image.file(
+                          _imageFile!,
+                          fit: BoxFit.cover,
+                          //width: MediaQuery.of(context).size.width * 0.75,
+                          height: MediaQuery.of(context).size.height * 0.3,
+                        )
+                      : const Text("image not provided"),
+                  Text(
+                    _poziom.round().toString(),
+                    style: const TextStyle(
+                      backgroundColor: Colors.tealAccent,
+                      fontSize: 40,
+                    ),
+                  ),
+                ],
+                alignment: Alignment.bottomLeft,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                  onPressed: _formKey.currentState?.validate() ?? true
+                      ? () {
+                          setState(() {
+                            _isFormSaved = _isFormSaved ? false : true;
+                          });
+                          // Validate returns true if the form is valid, or false otherwise.
+                          if (_formKey.currentState!.validate()) {
+                            // If the form is valid, display a snackbar. In the real world,
+                            // you'd often call a server or save the information in a database.
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SecondRoute(
+                                          imie: _imie,
+                                          nazwisko: _nazwisko,
+                                          poziom: _poziom,
+                                          avatar: _imageFile,
+                                        )));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Nieprawidlowe dane)')),
+                            );
+                          }
+                        }
+                      : null,
+                  child: const Text('Zapisz'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
